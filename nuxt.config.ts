@@ -8,6 +8,7 @@ export default defineNuxtConfig({
   telemetry: false,
   ssr: false,
   srcDir: "src/",
+  sourcemap: { client: true, server: false },
   pages: true,
   css: ["~/index.css"],
   modules: ["@pinia/nuxt"],
