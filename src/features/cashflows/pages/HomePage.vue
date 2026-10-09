@@ -56,13 +56,13 @@ const inp = "rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outli
     </div>
 
     <div class="grid gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-6">
-      <select v-model="filters.type" aria-label="Filter jenis" :class="inp"><option value="">Semua Jenis</option><option value="inflow">Inflow</option><option value="outflow">Outflow</option></select>
-      <select v-model="filters.source" aria-label="Filter sumber dana" :class="inp"><option value="">Semua Sumber</option><option value="cash">Tunai</option><option value="savings">Tabungan</option><option value="loans">Pinjaman</option></select>
-      <select v-model="filters.label" aria-label="Filter label" :class="inp"><option value="">Semua Label</option><option v-for="l in store.labels" :key="l" :value="l">{{ l }}</option></select>
-      <input v-model="filters.start_date" type="date" :class="inp" aria-label="Tanggal awal" />
-      <input v-model="filters.end_date" type="date" :class="inp" aria-label="Tanggal akhir" />
-      <button class="rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200" @click="resetFilters">Reset Filter</button>
-    </div>
+  <select id="filter-type" name="type" v-model="filters.type" aria-label="Filter jenis" :class="inp"><option value="">Semua Jenis</option><option value="inflow">Inflow</option><option value="outflow">Outflow</option></select>
+  <select id="filter-source" name="source" v-model="filters.source" aria-label="Filter sumber dana" :class="inp"><option value="">Semua Sumber</option><option value="cash">Tunai</option><option value="savings">Tabungan</option><option value="loans">Pinjaman</option></select>
+  <select id="filter-label" name="label" v-model="filters.label" aria-label="Filter label" :class="inp"><option value="">Semua Label</option><option v-for="l in store.labels" :key="l" :value="l">{{ l }}</option></select>
+  <input id="filter-start" name="start_date" v-model="filters.start_date" type="date" :class="inp" aria-label="Tanggal awal" />
+  <input id="filter-end" name="end_date" v-model="filters.end_date" type="date" :class="inp" aria-label="Tanggal akhir" />
+  <button class="rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200" @click="resetFilters">Reset Filter</button>
+</div>
 
     <div class="overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm">
       <table class="w-full text-left text-sm">

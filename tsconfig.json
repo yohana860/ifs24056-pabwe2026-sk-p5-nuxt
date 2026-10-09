@@ -17,11 +17,12 @@
     }
   },
   "include": [
+    ".nuxt/nuxt.d.ts",
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
     "nuxt.config.ts",
-    "vite.config.ts"
+    "vitest.config.ts"
   ]
 }

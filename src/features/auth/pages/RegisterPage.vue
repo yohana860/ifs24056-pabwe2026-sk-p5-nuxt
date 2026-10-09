@@ -28,9 +28,9 @@ async function submit() {
         <component :is="f.icon" class="absolute left-3 top-3 text-slate-500" :size="18" />
         <input
           :id="f.id"
+          :name="f.id"
           :type="f.type"
           :autocomplete="f.ac"
-
           :placeholder="f.ph"
           :value="f.model.value.value"
           @input="f.model.onChange"

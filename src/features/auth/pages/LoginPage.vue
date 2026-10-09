@@ -23,12 +23,14 @@ async function submit() {
         <Mail class="absolute left-3 top-3 text-slate-500" :size="18" />
         <input
           id="login-email-input"
+          name="email"
           type="email"
           autocomplete="email"
           placeholder="nama@email.com"
           :value="email.value.value"
           @input="email.onChange"
           class="w-full rounded-xl border border-slate-200 pl-10 pr-3 py-2.5 outline-none focus:ring-2 focus:ring-indigo-400"
+
         />
       </div>
     </div>
@@ -38,6 +40,7 @@ async function submit() {
         <Lock class="absolute left-3 top-3 text-slate-500" :size="18" />
         <input
           id="login-password-input"
+          name="password"
           type="password"
           autocomplete="current-password"
           placeholder="••••••••"
