@@ -30,6 +30,7 @@ export default defineNuxtConfig({
           },
         },
       },
+
     },
   },
   devServer: { port: customPort },
@@ -38,6 +39,9 @@ export default defineNuxtConfig({
     head: {
       title: "Delcom Cash Flow",
       htmlAttrs: { lang: "id" },
+      meta: [
+        { name: "description", content: "Delcom Cash Flow: aplikasi pencatat pemasukan dan pengeluaran." },
+      ],
       link: [
         { rel: "icon", type: "image/svg+xml", href: "/logo.svg" },
         { rel: "preconnect", href: "https://fonts.googleapis.com" },

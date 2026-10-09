@@ -24,17 +24,18 @@ function submit() {
   <form class="space-y-3" @submit.prevent="submit">
     <div class="grid grid-cols-2 gap-3">
       <div>
-        <label class="text-xs font-bold uppercase text-slate-600">Jenis</label>
-        <select v-model="form.type" :class="cls"><option value="inflow">Inflow (Pemasukan)</option><option value="outflow">Outflow (Pengeluaran)</option></select>
+        <label for="cf-type" class="text-xs font-bold uppercase text-slate-600">Jenis</label>
+        <select id="cf-type" v-model="form.type" :class="cls"><option value="inflow">Inflow (Pemasukan)</option><option value="outflow">Outflow (Pengeluaran)</option></select>
       </div>
       <div>
-        <label class="text-xs font-bold uppercase text-slate-600">Sumber Dana</label>
-        <select v-model="form.source" :class="cls"><option value="cash">Tunai</option><option value="savings">Tabungan</option><option value="loans">Pinjaman</option></select>
+        <label for="cf-source" class="text-xs font-bold uppercase text-slate-600">Sumber Dana</label>
+        <select id="cf-source" v-model="form.source" :class="cls"><option value="cash">Tunai</option><option value="savings">Tabungan</option><option value="loans">Pinjaman</option></select>
+
       </div>
     </div>
-    <div><label class="text-xs font-bold uppercase text-slate-600">Label Kategori</label><input v-model="form.label" placeholder="mis. Gaji, Makan" :class="cls" /></div>
-    <div><label class="text-xs font-bold uppercase text-slate-600">Nominal (Rp)</label><input v-model="form.nominal" type="number" min="1" placeholder="50000" :class="cls" /></div>
-    <div><label class="text-xs font-bold uppercase text-slate-600">Keterangan</label><textarea v-model="form.description" rows="3" placeholder="Catatan singkat" :class="cls" /></div>
+    <div><label for="cf-label" class="text-xs font-bold uppercase text-slate-600">Label Kategori</label><input id="cf-label" v-model="form.label" placeholder="mis. Gaji, Makan" :class="cls" /></div>
+    <div><label for="cf-nominal" class="text-xs font-bold uppercase text-slate-600">Nominal (Rp)</label><input id="cf-nominal" v-model="form.nominal" type="number" min="1" placeholder="50000" :class="cls" /></div>
+    <div><label for="cf-desc" class="text-xs font-bold uppercase text-slate-600">Keterangan</label><textarea id="cf-desc" v-model="form.description" rows="3" placeholder="Catatan singkat" :class="cls" /></div>
     <div class="flex justify-end gap-2 pt-2">
       <button type="button" class="rounded-xl px-4 py-2.5 font-semibold text-slate-600 hover:bg-slate-100" @click="emit('cancel')">Batal</button>
       <button type="submit" :disabled="busy" class="rounded-xl bg-indigo-600 px-5 py-2.5 font-semibold text-white hover:bg-indigo-700 disabled:opacity-60">{{ busy ? "Menyimpan..." : submitLabel }}</button>

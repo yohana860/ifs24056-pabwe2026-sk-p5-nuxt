@@ -20,10 +20,11 @@ async function submit() {
     <div>
       <label for="login-email-input" class="text-xs font-bold tracking-wide text-slate-600 uppercase">Alamat Email</label>
       <div class="relative mt-1">
-        <Mail class="absolute left-3 top-3 text-slate-400" :size="18" />
+        <Mail class="absolute left-3 top-3 text-slate-500" :size="18" />
         <input
           id="login-email-input"
           type="email"
+          autocomplete="email"
           placeholder="nama@email.com"
           :value="email.value.value"
           @input="email.onChange"
@@ -34,10 +35,11 @@ async function submit() {
     <div>
       <label for="login-password-input" class="text-xs font-bold tracking-wide text-slate-600 uppercase">Kata Sandi</label>
       <div class="relative mt-1">
-        <Lock class="absolute left-3 top-3 text-slate-400" :size="18" />
+        <Lock class="absolute left-3 top-3 text-slate-500" :size="18" />
         <input
           id="login-password-input"
           type="password"
+          autocomplete="current-password"
           placeholder="••••••••"
           :value="password.value.value"
           @input="password.onChange"
