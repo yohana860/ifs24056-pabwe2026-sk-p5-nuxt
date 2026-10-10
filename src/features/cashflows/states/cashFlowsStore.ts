@@ -44,10 +44,19 @@ export const useCashFlowsStore = defineStore("cashFlows", {
       this.isLoading = false;
     },
     async run(flag: string, done: string, fn: () => Promise<string>) {
-      (this as any)[flag] = true; (this as any)[done] = false;
-      try { await showSuccessDialog(await fn()); (this as any)[done] = true; } catch (e: any) { await showErrorDialog(e.message); }
-      (this as any)[flag] = false;
-      return (this as any)[done] as boolean;
+      const store = this as unknown as Record<string, boolean>;
+      store[flag] = true;
+      store[done] = false;
+      
+      try {
+        await showSuccessDialog(await fn());
+        store[done] = true;
+      } catch (e: any) {
+        await showErrorDialog(e.message);
+      }
+      
+      store[flag] = false;
+      return store[done];
     },
     addCashFlow(p: CashFlowPayload) { return this.run("isCashFlowAdd", "isCashFlowAdded", () => api.postCashFlow(p)); },
     changeCashFlow(id: string, p: CashFlowPayload) { return this.run("isCashFlowChange", "isCashFlowChanged", () => api.putCashFlow(id, p)); },

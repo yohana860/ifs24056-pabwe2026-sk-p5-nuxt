@@ -6,7 +6,7 @@ import { useUsersStore } from "~/features/users/states/usersStore";
 import { useAuthStore } from "~/features/auth/states/authStore";
 import { showConfirmDialog } from "~/helpers/toolsHelper";
 
-defineEmits<{ (e: "toggle"): void }>();
+defineEmits<(e: "toggle") => void>();
 const router = useRouter();
 const users = useUsersStore();
 const auth = useAuthStore();

@@ -3,7 +3,7 @@ import { RouterLink, useRoute } from "vue-router";
 import { LayoutDashboard, Users, UserCircle } from "lucide-vue-next";
 
 defineProps<{ open: boolean }>();
-const emit = defineEmits<{ (e: "close"): void }>();
+const emit = defineEmits<(e: "close") => void>();
 const route = useRoute();
 const menus = [
   { to: "/", label: "Ringkasan Arus Kas", icon: LayoutDashboard },

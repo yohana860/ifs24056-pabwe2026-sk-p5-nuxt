@@ -1,5 +1,5 @@
 {
-  "name": "ifs24056-pabwe2026-sk-p5-nuxt",
+  "name": "ifs24030-pabwe2026-sk-p5-nuxt",
   "type": "module",
   "private": true,
   "scripts": {
@@ -7,8 +7,8 @@
     "build": "nuxt build",
     "preview": "nuxt preview",
     "start": "node start.mjs",
-    "dev:vite": "vite",
-    "build:vite": "vite build",
+    "dev:vite": "vite --config vitest.config.ts",
+    "build:vite": "vite build --config vitest.config.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -26,9 +26,7 @@
     "vue-router": "^5.3.1"
   },
   "overrides": {
-    "dompurify": "^3.2.4",
-    "simple-git": "^4.0.1",
-    "@simple-git/argv-parser": "^2.0.1"
+    "dompurify": "^3.2.4"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
