@@ -1,57 +1,93 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { apiFetch, getAccessToken, pickList, putAccessToken, removeAccessToken } from "../apiHelper";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { apiFetch, getAccessToken, pickList, putAccessToken, removeAccessToken } from "./apiHelper";
 
-describe("access token helpers", () => {
-  afterEach(() => localStorage.clear());
-  it("gets, stores, and removes the access token", () => {
+const respond = (body: any, ok = true, status = 200) =>
+  vi.fn().mockResolvedValue({ ok, status, json: () => Promise.resolve(body) });
+
+describe("apiHelper", () => {
+  beforeEach(() => localStorage.clear());
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("menyimpan, membaca, dan menghapus token", () => {
     expect(getAccessToken()).toBeNull();
     putAccessToken("abc");
     expect(getAccessToken()).toBe("abc");
     removeAccessToken();
     expect(getAccessToken()).toBeNull();
   });
-});
 
-describe("apiFetch", () => {
-  afterEach(() => { vi.restoreAllMocks(); localStorage.clear(); });
-  it("adds query params and bearer auth and serializes JSON bodies", async () => {
-    putAccessToken("secret");
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true, status: 200, json: async () => ({ success: true }) } as Response);
-    await expect(apiFetch("/items", { method: "POST", body: { x: 1 }, query: { a: 2, empty: "", nil: null, missing: undefined } })).resolves.toEqual({ success: true });
-    const [url, init] = fetchMock.mock.calls[0];
-    expect(String(url)).toContain("/items?a=2");
-    expect(init?.headers).toEqual({ Authorization: "Bearer secret", "Content-Type": "application/json" });
-    expect(init?.body).toBe('{"x":1}');
+  it("GET tanpa opsi, tanpa token", async () => {
+    const f = respond({ success: true, data: 1 });
+    vi.stubGlobal("fetch", f);
+    const json = await apiFetch("/x");
+    expect(json.data).toBe(1);
+    const [url, init] = f.mock.calls[0];
+    expect(String(url)).toBe(`${DELCOM_BASEURL}/x`);
+    expect(init.method).toBe("GET");
+    expect(init.headers.Authorization).toBeUndefined();
+    expect(init.body).toBeUndefined();
   });
-  it("uses defaults with no token and no request body", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true, status: 200, json: async () => ({ ok: true }) } as Response);
-    await expect(apiFetch("/plain")).resolves.toEqual({ ok: true });
-    expect(fetchMock.mock.calls[0][1]).toEqual({ method: "GET", headers: {}, body: undefined });
-  });
-  it("supports unauthenticated requests and FormData", async () => {
-    putAccessToken("secret");
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true, status: 200, json: async () => ({}) } as Response);
-    const form = new FormData(); form.append("file", "content");
-    await apiFetch("/upload", { body: form, auth: false });
-    expect(fetchMock.mock.calls[0][1]?.headers).toEqual({});
-    expect(fetchMock.mock.calls[0][1]?.body).toBe(form);
-  });
-  it("handles invalid JSON and throws on HTTP or API errors", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch");
-    fetchMock.mockResolvedValueOnce({ ok: false, status: 503, json: async () => { throw new Error("bad json"); } } as unknown as Response);
-    await expect(apiFetch("/bad", { auth: false })).rejects.toThrow("Permintaan gagal (503)");
-    fetchMock.mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ success: false, message: "Ditolak" }) } as Response);
-    await expect(apiFetch("/bad", { auth: false })).rejects.toThrow("Ditolak");
-    fetchMock.mockResolvedValueOnce({ ok: false, status: 400, json: async () => ({ message: "Invalid" }) } as Response);
-    await expect(apiFetch("/bad", { auth: false })).rejects.toThrow("Invalid");
-  });
-});
 
-describe("pickList", () => {
-  it("returns the first matching array, the array itself, or an empty list", () => {
-    expect(pickList({ first: "no", second: [1] }, "first", "second")).toEqual([1]);
-    expect(pickList([2])).toEqual([2]);
-    expect(pickList({ first: 3 }, "first")).toEqual([]);
-    expect(pickList(null, "x")).toEqual([]);
+  it("menambahkan query yang terisi dan melewati yang kosong", async () => {
+    const f = respond({});
+    vi.stubGlobal("fetch", f);
+    await apiFetch("/x", { query: { a: "1", b: "", c: null, d: undefined, e: 0 } });
+    const url = String(f.mock.calls[0][0]);
+    expect(url).toContain("a=1");
+    expect(url).toContain("e=0");
+    expect(url).not.toContain("b=");
+    expect(url).not.toContain("c=");
+    expect(url).not.toContain("d=");
+  });
+
+  it("mengirim Bearer token, kecuali auth=false", async () => {
+    putAccessToken("tok");
+    const f = respond({});
+    vi.stubGlobal("fetch", f);
+    await apiFetch("/x");
+    expect(f.mock.calls[0][1].headers.Authorization).toBe("Bearer tok");
+    await apiFetch("/x", { auth: false });
+    expect(f.mock.calls[1][1].headers.Authorization).toBeUndefined();
+  });
+
+  it("mengirim body JSON", async () => {
+    const f = respond({});
+    vi.stubGlobal("fetch", f);
+    await apiFetch("/x", { method: "POST", body: { a: 1 } });
+    const init = f.mock.calls[0][1];
+    expect(init.headers["Content-Type"]).toBe("application/json");
+    expect(init.body).toBe(JSON.stringify({ a: 1 }));
+  });
+
+  it("mengirim FormData apa adanya", async () => {
+    const f = respond({});
+    vi.stubGlobal("fetch", f);
+    const fd = new FormData();
+    await apiFetch("/x", { method: "POST", body: fd });
+    const init = f.mock.calls[0][1];
+    expect(init.body).toBe(fd);
+    expect(init.headers["Content-Type"]).toBeUndefined();
+  });
+
+  it("melempar pesan dari server saat respons tidak ok", async () => {
+    vi.stubGlobal("fetch", respond({ message: "Salah" }, false, 400));
+    await expect(apiFetch("/x")).rejects.toThrow("Salah");
+  });
+
+  it("melempar error saat success=false", async () => {
+    vi.stubGlobal("fetch", respond({ success: false, message: "Gagal bos" }));
+    await expect(apiFetch("/x")).rejects.toThrow("Gagal bos");
+  });
+
+  it("memakai pesan bawaan saat tidak ada pesan / body bukan JSON", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500, json: () => Promise.reject(new Error("x")) }));
+    await expect(apiFetch("/x")).rejects.toThrow("Permintaan gagal (500)");
+  });
+
+  it("pickList", () => {
+    expect(pickList({ a: [1] }, "z", "a")).toEqual([1]);
+    expect(pickList([2], "a")).toEqual([2]);
+    expect(pickList(null, "a")).toEqual([]);
+    expect(pickList({ a: "bukan array" }, "a")).toEqual([]);
   });
 });
